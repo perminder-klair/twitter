@@ -4,6 +4,7 @@
  $this->widget('ext.twitter.Twitter',array(
 	    'username'=>gl('twitter'),
 	    'numberTweets'=>10,
+	    'widgetId'=>'home',
 	));
  */
  
@@ -14,10 +15,12 @@ class Twitter extends CWidget
 	public $username=null;
 	public $numberTweets = 10;
 	
-	public $consumerkey = "d1dgmdSCUf25mt5bbhDdA";
-	public $consumersecret = "F9t8IFYrelVcgwLedjrwxcov9obxHdhV8raSJQ6yot0";
-	public $accesstoken = "1530253470-Bc37fQMxUQw7tJxlBbsthqUlOHG7bkG9lpsd7XA";
-	public $accesstokensecret = "VDheLDEZ9PJ8de8EvPOGmp4p90RMzpOuN3RckJSJUWk";
+	public $consumerkey = "";
+	public $consumersecret = "";
+	public $accesstoken = "";
+	public $accesstokensecret = "";
+	
+	public $widgetId='default';
 	
 	public function init(){
         if (!$this->username){
@@ -47,10 +50,30 @@ class Twitter extends CWidget
           'meta_wrap_close'       => '</span>',
           'tweet_wrap_close'      => '</li>',
           'error_message'         => 'Oops, our twitter feed is unavailable right now.',
-          'error_link_text'       => 'Follow us on Twitter'
+          'error_link_text'       => 'Follow us on Twitter',
+          'cache_file'            => $this->createCacheFile(), // Where on the server to save the cached formatted tweets
+          'cache_file_raw'        => dirname(__FILE__).'/cache/twitter-array.txt', // Where on the server to save the cached raw tweets
 		);
 		$TweetPHP=new TweetPHP($options);
 
 		echo $TweetPHP->get_tweet_list();
+	}
+	
+	public function createCacheFile()
+	{
+		$cache_path = dirname(__FILE__).'/cache/';
+		if(!is_dir($cache_path)) mkdir($cache_path, 0777, true);
+		
+		$filename = $cache_path.'twitter-'.$this->widgetId.'.txt';
+		
+		if (!file_exists($filename)) 
+		{
+			$content = "";
+			$fp = fopen($filename,"wb");
+			fwrite($fp,$content);
+			fclose($fp);
+		}
+		
+		return $filename;
 	}
 }
