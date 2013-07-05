@@ -41,8 +41,7 @@
 
       $this->options = array_merge(
       array(
-          'cache_file'            => dirname(__FILE__).'/cache/twitter.txt', // Where on the server to save the cached formatted tweets
-          'cache_file_raw'        => dirname(__FILE__).'/cache/twitter-array.txt', // Where on the server to save the cached raw tweets
+
         ),
         $options
       );
@@ -50,7 +49,7 @@
       $cache_file_timestamp = ((file_exists($this->options['cache_file']))) ? filemtime($this->options['cache_file']) : 0;
 
       // Show file from cache if still valid.
-      if (time() - $this->options['cachetime'] > $cache_file_timestamp) {
+      if (time() - $this->options['cachetime'] < $cache_file_timestamp) { //Maybe > ??
         $this->tweet_found = true;
         $this->tweet_list = file_get_contents($this->options['cache_file']);
         
